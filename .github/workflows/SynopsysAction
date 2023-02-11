@@ -1,0 +1,41 @@
+name: Synopsys Security Testing
+
+on:
+  push:
+    branches: [ master, main ]
+
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Synopsys Action
+        uses: synopsys-sig/synopsys-action@1.0.0
+        with:
+          coverity_url: ${{ secrets.COVERITY_URL }}
+          coverity_user: ${{ secrets.COVERITY_USER }}
+          coverity_passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
+          # Many customers prefer to set their Coverity project and stream names to match
+          # the GitHub repository name
+          coverity_project_name: ${{ secrets.COVERITY_PROJECT_NAME }}
+          coverity_stream_name: ${{ github.event.repository.name }}
+          # Optionally you may specify the ID number of a saved view to apply as a "break the build" policy.
+          # If any defects are found within this view when applied to the project, the build will be failed
+          # with an exit code.
+          #coverity_policy_view: 100001
+          # Below fields are optional
+          #coverity_repository_name: ${{ secrets.COVERITY_REPOSITORY_NAME }}
+          #coverity_branch_name: ${{ secrets.COVERITY_BRANCH_NAME }}
+          
+          # Optional parameter to specify path to synopsys bridge.
+          # This can be used if you want to pre-configure your GitHub Runner with the
+          # Synopsys Bridge software
+          # The default is either /{user_home}/synopsys-bridge or in linux /usr/synopsys-bridge
+          #synopsys_bridge_path: "/path_to_bridge_executable"
+        env:
+          LINUX_BRIDGE_URL: "https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-action/0.1.72/ci-package-0.1.72-linux64.zip"
